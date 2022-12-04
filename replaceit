@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+
+#####################################################
+# Author: Shinichi Okada
+# Version : v0.0.3
+# Date: 2021-03-20
+#####################################################
+
+# Clean up
+unset FROM TO dir_name
+
+# set defaults
+version="v0.0.3"
+TO="_"
+FROM=" "
+work_dir=$(pwd)
+file=""
+
+usage() {
+  cat <<EOF
+Name: 
+=====
+replaceit
+Description: 
+============
+This script replaces spaces of file names with underscores as the default.
+Usage:  
+======
+replaceit [ -m FROM ] [ -t TO ]  
+    -f  FROM (Default: space)
+    -t  TO   (Default: _)
+    -d  Directory name
+    -o  One file replacement. Use quotes if the file has space(s).
+    -h  Help
+Examples:
+=========
+    The default changes from a space to _ of file names .
+    $ replaceit  
+    Change from - to _.
+    $ replaceit -f - -t _
+    Quote the file name when change one file with space(s).
+    $ replaceit -o Downloads/test1.pdf 
+    $ replaceit -o "Downloads/test 1.pdf"
+    Using a directory
+    $ replaceit -d mydir1
+    Quote the directory name when it has space(s).
+    $ replaceit -d "my dir 1"
+EOF
+  exit 2
+}
+
+###################
+# main script
+
+while (($# > 0)); do #while arguments count >0
+  case "$1" in
+  -f | --from)
+    FROM=$2
+    shift 2 # shift twice to bypass switch and its value
+    ;;
+  -t | --to)
+    TO=$2
+    shift 2 # shift twice to bypass switch and its value
+    ;;
+  -d | --dir)
+    work_dir="$HOME/$2"
+    shift 2 # shift twice to bypass switch and its value
+    ;;
+  -o | --one)
+    file="$HOME/$2"
+    shift 2 # shift twice to bypass switch and its value
+    ;;
+  -v | --version)
+    echo $version
+    exit 0
+    ;;
+  -h | --help | *)
+    usage
+    exit 0
+    ;;
+  esac
+done
+
+############# Main body ############
+
+# check if work_dir exists
+if [ ! -d "$work_dir" ]; then
+  echo "Directory $work_dir doesn't exist."
+  exit 1
+fi
+
+# -o flag is used to change only one file. Check if $file is not empty
+if [ -n "$file" ]; then
+  # check if $file is a file by -f exists
+  if [ -f "$file" ]; then
+    echo "We are replacing $FROM to ${TO} of ${file} file."
+    new="${file//$FROM/$TO}"
+    echo "$new"
+    if [ "$new" != "$file" ]; then
+      if [ -e "$new" ]; then
+        echo "Not renaming $file because $new already exists"
+        exit 2
+      else
+        echo "Moving one file $file to ${new}."
+        mv "$file" "$new"
+        exit 0
+      fi
+    fi
+  else
+    echo "No file found."
+    exit 1
+  fi
+fi
+
+echo
+echo "=========="
+echo "We are replacing $FROM to ${TO} in ${work_dir} directory."
+echo "=========="
+echo
+for f in "$work_dir"/*; do
+  # https://stackoverflow.com/questions/13210880/replace-one-substring-for-another-string-in-shell-script
+  # To replace all occurrences, use ${parameter//pattern/string}
+  # To replace the first occurrence of a pattern with a given string, use ${parameter/pattern/string}:
+  new="${f//$FROM/$TO}"
+  # echo "New: $new"
+  # echo "Old: $f"
+  if [ "$new" != "$f" ]; then
+    if [ -e "$new" ]; then
+      echo "Not renaming $f because $new already exists"
+      exit 2
+    else
+      echo "- Moving $f in ${work_dir} to ${new}."
+      mv "$f" "$new"
+    fi
+  fi
+done
+
+exit 0

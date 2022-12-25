@@ -1,7 +1,7 @@
 <h1 align="center">Replaceit</h1>
 
 <p align="center">
-<a href="https://shinokada.github.io/replaceit/">Replaceit</a>
+<a href="https://replaceit.codewithshin.com/">Replaceit</a>
 </p>
 
 <p align="center">

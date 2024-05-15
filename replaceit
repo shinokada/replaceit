@@ -2,7 +2,7 @@
 
 #####################################################
 # Author: Shinichi Okada
-# Version : v0.0.3
+# Version : v0.1.0
 # Date: 2021-03-20
 #####################################################
 
@@ -10,7 +10,7 @@
 unset FROM TO dir_name
 
 # set defaults
-version="v0.0.3"
+version="v0.1.0"
 TO="_"
 FROM=" "
 work_dir=$(pwd)
